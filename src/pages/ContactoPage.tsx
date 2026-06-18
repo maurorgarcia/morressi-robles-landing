@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Mail, Phone, MapPin, Send, CheckCircle } from 'lucide-react';
-import { supabase } from '../lib/supabase';
 
 type FormState = {
   nombre: string;
@@ -15,7 +14,6 @@ const initial: FormState = { nombre: '', email: '', telefono: '', tipo_consulta:
 export default function ContactoPage() {
   const [form, setForm] = useState<FormState>(initial);
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const [errorMsg, setErrorMsg] = useState('');
 
   const set = (k: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm((prev) => ({ ...prev, [k]: e.target.value }));
@@ -23,14 +21,12 @@ export default function ContactoPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus('loading');
-    const { error } = await supabase.from('contactos').insert([form]);
-    if (error) {
-      setStatus('error');
-      setErrorMsg('Hubo un error al enviar tu mensaje. Por favor intentá nuevamente.');
-    } else {
-      setStatus('success');
-      setForm(initial);
-    }
+    
+    // Simulación del envío de datos con un delay de 1.5 segundos
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    
+    setStatus('success');
+    setForm(initial);
   };
 
   return (
@@ -201,7 +197,9 @@ export default function ContactoPage() {
                   </div>
 
                   {status === 'error' && (
-                    <p className="text-sm text-red-600 bg-red-50 border border-red-200 px-4 py-3 rounded-sm">{errorMsg}</p>
+                    <p className="text-sm text-red-600 bg-red-50 border border-red-200 px-4 py-3 rounded-sm">
+                      Hubo un error al enviar tu mensaje. Por favor intentá nuevamente.
+                    </p>
                   )}
 
                   <button
